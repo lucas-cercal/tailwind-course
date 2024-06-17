@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparação Antes e Depois</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black sm:bg-green-800 md:bg-blue-800 lg:bg-yellow-800 xl:bg-purple-800 2xl:bg-red-800">
+  <div class="relative" x-data="{ handlePosition: 0, showAfterImage: false }">
+    <!-- Imagem "Antes" -->
+    <img class="absolute inset-0 w-full h-full object-cover" src="../assets/img/img1.jpg" alt="Imagem Antes"
+      :style="{ 'clip-path': 'inset(0 ' + (100 - handlePosition) + '% 0 0)' }">
+
+    <!-- Imagem "Depois" -->
+    <img class="absolute inset-0 w-full h-full object-cover opacity-0 hover:opacity-100 transition-opacity duration-300"
+      src="../assets/img/img2.jpg" alt="Imagem Depois" :style="{ 'clip-path': 'inset(0 0 0 ' + handlePosition + '%)' }">
+
+    <!-- Alça de arrasto -->
+    <div
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-md cursor-pointer z-10"
+      :style="'left: ' + handlePosition + '%'" @mousedown="handleDragStart" @touchstart="handleDragStart"
+      @mouseup="handleDragEnd" @touchend="handleDragEnd" @mousemove="handleDragging" @touchmove="handleDragging">
+    </div>
+
+    <script>
+      function getMousePosition(e) {
+        return e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+      }
+
+      document.addEventListener('mouseup', handleDragEnd);
+      document.addEventListener('touchend', handleDragEnd);
+
+      function handleDragStart(e) {
+        e.preventDefault();
+        this.dragging = true;
+        this.startX = getMousePosition(e);
+        this.startPos = this.handlePosition;
+      }
+
+      function handleDragging(e) {
+        if (!this.dragging) return;
+        const mouseX = getMousePosition(e);
+        const diff = mouseX - this.startX;
+        this.handlePosition = Math.max(0, Math.min(100, this.startPos + diff));
+        this.showAfterImage = this.handlePosition > 50;
+      }
+
+      function handleDragEnd() {
+        this.dragging = false;
+      }
+    </script>
+  </div>
+</body>
+
+</html>
